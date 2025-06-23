@@ -14,7 +14,7 @@ services:
       - REDIS_HOST=redis
       - POSTGRESQL_HOST=postgres
     ports:
-      - "8080:8080"
+      - "8181:8080"
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -29,7 +29,7 @@ services:
       - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/command/#
     depends_on:
       - mosquitto
-  
+
   chirpstack-gateway-bridge-basicstation:
     image: chirpstack/chirpstack-gateway-bridge:4
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
     command: --server chirpstack:8080 --bind 0.0.0.0:8090 --insecure
     ports:
-      - "8090:8090"
+      - "8191:8090"
     depends_on:
       - chirpstack
 
@@ -57,9 +57,9 @@ services:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgresqldata:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=chirpstack
-      - POSTGRES_PASSWORD=chirpstack
-      - POSTGRES_DB=chirpstack
+      - POSTGRES_USER=${POSTGRES_USER:-chirpstack}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-chirpstack}
+      - POSTGRES_DB=${POSTGRES_DB:-chirpstack}
 
   redis:
     image: redis:7-alpine
@@ -72,8 +72,8 @@ services:
     image: eclipse-mosquitto:2
     restart: unless-stopped
     ports:
-      - "1883:1883"
-    volumes: 
+      - "1993:1883"
+    volumes:
       - ./configuration/mosquitto/config/:/mosquitto/config/
 
 volumes:
